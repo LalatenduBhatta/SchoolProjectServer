@@ -65,3 +65,36 @@ export const forgetPassword = async (req, res) => {
         res.status(500).send({ error: "Something Went Worng", msg: error.message })
     }
 }
+
+
+export const verifyOTP = async (req, res) => {
+    try {
+        const { otp, email } = req.body
+        if (!email || !otp) return res.status(400).send({ error: "Provide all fields" })
+        const isAdmin = await Admin.findOne({ email })
+        if (!isAdmin) return res.status(401).send({ error: "Admin email not found" });
+        else {
+            if (!isAdmin.otp) return res.status(400).send({ error: "Generate the otp first" });
+            else {
+                const isExpired = (Date.now() - isAdmin.otpCreatedAt) >= (1000 * 60 * 5)
+                if (isExpired) return res.status(403).send({ error: "Otp expired generate again" });
+                else {
+                    if (isAdmin.otp === otp) {
+                        //remove the otp and otpCreatedAt from database
+                        isAdmin.otp = null;
+                        isAdmin.otpCreatedAt = null;
+                        await isAdmin.save()
+                        //send the auth token to the user
+                        const token = generateToken({ id: isAdmin._id })
+                        return res.status(200).send({ token })
+                    }
+                    else {
+                        return res.status(400).send({ error: "Invalid otp" })
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        res.status(500).send({ error: "Something Went Wrong", msg: error.message })
+    }
+}
