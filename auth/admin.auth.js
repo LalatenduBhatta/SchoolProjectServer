@@ -98,3 +98,24 @@ export const verifyOTP = async (req, res) => {
         res.status(500).send({ error: "Something Went Wrong", msg: error.message })
     }
 }
+
+
+export const changePassword = async (req, res) => {
+    try {
+        const { id } = req
+        const { newPassword } = req.body
+        if (!id || !newPassword) return res.status(400).send({ error: "provide all required fileds" });
+        else {
+            const isAdmin = await Admin.findById(id)
+            if (!isAdmin) return res.status(401).send({ error: "admin data not matched" });
+            else {
+                //update the admin password
+                isAdmin.$set({ password: newPassword })
+                await isAdmin.save()
+                return res.status(200).send({ message: "password updated successfully" })
+            }
+        }
+    } catch (error) {
+        res.status(500).send({ error: "Something Went Wrong", msg: error.message })
+    }
+}
