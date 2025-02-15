@@ -31,5 +31,5 @@ const PORT = process.env.PORT || 80
 
 app.listen(PORT, () => {
     dbConnect() //calling the database connection funtion
-    console.log("server running at http://" + hostname + ":" + PORT);
+    console.log("server running at PORT);
 })
