@@ -27,9 +27,9 @@ app.use("/teacher", teacherRouter)
 
 
 const PORT = process.env.PORT || 80
-const hostname = process.env.HOST_NAME || "localhost"
+// const hostname = process.env.HOST_NAME || "localhost"
 
-app.listen(PORT, hostname, () => {
+app.listen(PORT, () => {
     dbConnect() //calling the database connection funtion
     console.log("server running at http://" + hostname + ":" + PORT);
 })
